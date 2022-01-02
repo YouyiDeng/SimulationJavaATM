@@ -1,0 +1,446 @@
+@startuml
+
+abstract class Account
+abstract class AssetAccount
+abstract class DebtAccount
+abstract class Transaction
+
+class AccountForFX
+class Appointment
+class ATM
+class Bank
+class BankAdvisor
+class BankManager
+class BankPerson
+class BankUtil
+class ChequingAccount
+class Config
+class CreditCardAccount
+class Customer
+class Deposit
+class IdentifiablePerson
+class LineOfCreditAccount
+class NewAccountRequestForFX
+class PayBill
+class PowerSavingAccount
+class SavingAccount
+class TransactionForFX
+class TransferIn
+class TransferOut
+class TransferToOther
+class Withdrawal
+
+Transaction <|-up- PayBill
+Transaction <|-right-Deposit
+Transaction <|-right-Withdrawal
+Transaction <|-left- TransferIn
+Transaction <|-down- TransferOut
+Transaction <|-- TransferToOther
+
+Transaction -right- Account
+
+Account <|-left- DebtAccount
+Account <|-- AssetAccount
+
+AssetAccount <|-right- ChequingAccount
+AssetAccount <|-left- SavingAccount
+DebtAccount <|-- CreditCardAccount
+LineOfCreditAccount --|> DebtAccount
+PowerSavingAccount --|> SavingAccount
+
+Transaction -- Transaction
+
+TransferIn -- Account
+TransferOut -- Account
+TransferToOther -- Customer
+
+BankPerson <|-up- BankManager
+BankPerson <|-right- BankAdvisor
+
+BankPerson --|>IdentifiablePerson
+Customer -->IdentifiablePerson
+
+ATM o-- Bank
+Customer -o Bank
+Bank o- BankPerson
+Customer o-left- Account
+Customer o-- ChequingAccount
+
+abstract class Account {
+    {static}nextAccountNumber: int
+    #accountType: String
+    #accountNumber: int
+    #customerNumber: int
+    #balance: BigDecimal
+    #createdOn: LocalDateTime
+    #recentTrxID: int
+    #joint: boolean
+    #secondCustomer: Customer
+
+    +Account(customerNumber: int, amount: BigDecimal, createdOn:LocalDateTime)
+    +Account(accountNumber: int, customerNumber: int, amount: BigDecimal, createdOn: LocalDateTime)
+    +getBalance(): BigDecimal
+    ~setBalance(amount: BigDecimal): void
+    +{abstract}isAbleToTakeOutMoney(amount: BigDecimal): boolean
+    {abstract}addAmount(amount: BigDecimal): void
+    {abstract}subtractAmount(amount: BigDecimal): void
+    +getAccountNumber(): int
+    +getCustomerNumber(): int
+    +getRecentTrxID(): int
+    +getJoint(): boolean
+    +setJoint(value: boolean): void
+    +getSecondCustomer(): Customer
+    +setSecondCustomer(customer: Customer): void
+}
+
+abstract class AssetAccount {
+    +AssetAccount(customerNumber: int, amount: BigDecimal, createdOn:LocalDateTime)
+    +AssetAccount(accountNumber: int, customerNumber: int, amount: BigDecimal, createdOn:LocalDateTime)
+    #addAmount(amount: BigDecimal): void
+    #subtractAmount(amount: BigDecimal): void
+}
+
+abstract class DebtAccount {
+    #maximumDebt: BigDecimal
+
+    +DebtAccount(customerNumber: int, amount: BigDecimal, createdOn:LocalDateTime)
+    +DebtAccount(accountNumber: int, customerNumber: int, amount: BigDecimal, createdOn:LocalDateTime)
+    #addAmount(amount: BigDecimal): void
+    #subtractAmount(amount: BigDecimal): void
+    +isAbleToTakeOutMoney(amount: BigDecimal): boolean
+    +getMaximumDebt(): BigDecimal
+    +setMaximumDebt(maximumDebt: BigDecimal): void
+}
+
+abstract class Transaction {
+    ~{static}nextTrxID: int = 1
+    ~{static}mostRecentTrx: Transaction
+    #trxID: int
+    #account: Account
+    #trxDateTime: LocalDateTime
+    #trxAmount: BigDecimal
+    #trxType: String
+    #undoable: boolean
+    #isReversingEntry: boolean
+
+    +Transaction(a: Account, amount: BigDecimal, trxDateTime:LocalDateTime)
+    +Transaction(trxID: int, a: Account, amount: BigDecimal, trxDateTime:LocalDateTime)
+    +{abstract}doTransaction(): boolean
+    ~{static}unDoTransaction(originalTrx: Transaction): boolean
+    #addTrxToFile(trx: Transaction): void
+    #{static}updateAccountFile(a: Account): void
+    +toString(): String
+    +{static}getMostRecentTrx(): Transaction
+    +getTrxID(): int
+    +getAccount(): Account
+    +getTrxDateTime(): LocalDateTime
+    +getTrxAmount(): BigDecimal
+    +getTrxType(): String
+    +getUndoable(): boolean
+    +getIsReversingEntry(): boolean
+    +getSecondID(): int
+}
+
+class AccountForFX {
+    -{final} accountNumber: IntegerProperty
+    -{final} accountType: StringProperty
+    -{final} balance: ObjectProperty<BigDecimal>
+    -{final} accountOpenDate: ObjectProperty<LocalDateTime>
+    -{final} primary: BooleanProperty
+    -{final} joint:  BooleanProperty
+
+    +AccountForFX(accountNumber: int, accountType: String, balance: BigDecimal,
+        accountOpenDate: LocalDateTime, primary: boolean, joint: boolean)
+    +getAccountNumber(): int
+    +accountTypeProperty(): StringProperty
+    +getBalance(): BigDecimal
+    +setBalance(value: BigDecimal): void
+    +getAccountOpenDate(): LocalDateTime
+    +primaryProperty(): BooleanProperty
+    +jointProperty(): BooleanProperty
+    +setJoint(joint: Boolean): void
+}
+
+class Appointment {
+    {final}bankAdvisorNumber: IntegerProperty
+    {final}customerNumber: IntegerProperty
+    {final}requestedOn: ObjectProperty<LocalDateTime>
+    {final}subject: StringProperty
+
+    +Appointment(bankAdvisorNumber: int, customerNumber: int, requestedOn: LocalDateTime, subject: String)
+    +getBankAdvisorNumber(): int
+    +setBankAdvisorNumber(bankAdvisorNumber: int): void
+    +bankAdvisorNumberProperty(): IntegerProperty
+    +getCustomerNumber(): int
+    +setCustomerNumber(customerNumber: int): void
+    +customerNumberProperty(): IntegerProperty
+    +getRequestedOn(): LocalDateTime
+    +setRequestedOn(requestedOn: LocalDateTime): void
+    +requestedOnProperty(): ObjectProperty<LocalDateTime>
+    +getSubject(): String
+    +setSubject(subject: String): void
+    +subjectProperty(): StringProperty
+}
+
+class ATM {
+    {static}billOf5: int = 100
+    {static}billOf10: int = 100
+    {static}billOf20: int = 100
+    {static}billOf50: int = 100
+    -{static}theBank: Bank
+
+    +ATM()
+    +{static}getATMMoney(): BigDecimal
+    +{static}getBillOf5(): int
+    +{static}getBillOf10(): int
+    +{static}getBillOf20(): int
+    +{static}getBillOf50(): int
+    +getTheBank(): Bank
+}
+
+class Bank {
+    -{static}customers: ArrayList<Customer>
+    -{static}workers: ArrayList<BankPerson>
+
+    +Bank()
+    +Bank(localDate: LocalDate)
+    ~{static}reloadBank(): void
+    +addNewCustomer(c: Customer): void
+    +addNewWorker(w: BankPerson): void
+    +findCustomer(username: String, password: String): Customer
+    +{static}findCustomer(customerNumber: int): Customer
+    +{static}findAccount(accountNumber: int): Account
+    +userNameTaken(username: String): boolean
+    +sinNumberTaken(sinNumber: int, isCustomer: boolean): boolean
+    +findWorker(username: String, password: String): BankPerson
+    +getSavingAccounts(): ArrayList<SavingAccount>
+    +getAllAccountsFX(): ObservableList<AccountForFX>
+}
+
+class BankAdvisor {
+    -appointments: ObservableList<Appointment>
+
+    +BankAdvisor(username: String, password: String, sinNumber: int)
+    +BankAdvisor(employeeNumber: int, username: String, password: String, sinNumber: int)
+    +createAppointment(customerNumber: int, subject: String): Appointment
+    -addAppointmentToFile(appointment: Appointment): void
+    -readAppointments(): void
+    +getAppointments(): ObservableList<Appointment>
+}
+
+class BankManager {
+    +BankManager(username: String, password: String, sinNumber: int)
+    +BankManager(employeeNumber: int, username: String, password: String, sinNumber: int)
+    +createAccount(): void
+    +createAccount(accountRequestForFX: NewAccountRequestForFX): boolean
+    +updateAccountRequestFile(requests: ObservableList<NewAccountRequestForFX>): void
+    +getNewAccountRequestsFX(): ObservableList<NewAccountRequestForFX>
+    +undoMostRecentTransaction(): boolean
+    +undoTransaction(trxID: int): boolean
+    +getAllTransactions(): ObservableList<TransactionForFX>
+}
+
+class BankPerson {
+    ~{static}nextEmployeeNumber: int = 1
+    #employeeNumber: int
+    #role: String
+    #mySelfAsCustomer: Customer
+
+    +BankPerson(username: String, password: String, sinNumber: int)
+    +BankPerson(employeeNumber: int, username: String, password: String, sinNumber: int)
+    -findMySelf(): Customer
+    +getMySelfAsCustomer(): Customer
+    +makeAccountJoint(accountNumber: int, customerNumber: int): boolean
+    -makeAccountJoint(account: Account, customer: Customer): boolean
+    -updateAccountFileForJoint(a: Account): void
+    #addNewAccountToFile(a: Account): void
+    +addMoneyToATM(billOf5: int, billOf10: int, billOf20: int, billOf50: int): void
+    +processDepositFile(): String
+    +{static}findTransaction(transactionID: int): Transaction
+    -{static}makeTransaction(trxID: int, trxType: String, trxAmount: BigDecimal, trxDateTime: LocalDateTime,
+            undoable: boolean, reversingEntry: boolean, customerNumber: int, accountNumber: int, number2: int): Transaction
+}
+
+class BankUtil {
+    ~{static}addInterestToSaving(): void
+    ~{static}readCustomers(): void
+    ~{static}readWorkers(): void
+    ~{static}updateNextCustomerNumber(): void
+    ~{static}updateNextEmployeeNumber(): void
+    ~{static}updateNextTrxID(): void
+    ~{static}addNewCustomerToFile(c: Customer): void
+    ~{static}addNewWorkerToFile(w: BankPerson): void
+}
+
+class ChequingAccount {
+    -primary: boolean
+    ~overDraftLimit: BigDecimal = BigDecimal.valueOf(100.00)
+
+    +ChequingAccount(customerNumber: int, amount: BigDecimal, createdOn: LocalDateTime, isPrimary: boolean)
+    +ChequingAccount(accountNumber: int, customerNumber: int, amount: BigDecimal, createdOn: LocalDateTime, isPrimary: boolean)
+    +getPrimary(): boolean
+    ~setPrimary(isPrimary: boolean): void
+    +isAbleToTakeOutMoney(amount: BigDecimal): boolean
+}
+
+class Config {
+    ~{static}customerFile: String = "src/files/customers.txt";
+    ~{static}workerFile: String = "src/files/workers.txt";
+    ~{static}accountFile: String = "src/files/accounts.txt";
+    ~{static}trxFile: String = "src/files/transactions.txt";
+    ~{static}billPaymentFile: String = "src/files/outgoing.txt";
+    ~{static}accountRequestFile: String = "src/files/accountRequest.txt";
+    ~{static}alertFile: String = "src/files/alerts.txt";
+    ~{static}depositFile: String = "src/files/deposits.txt";
+    ~{static}appointmentFile: String = "phase2/src/files/appointments.txt"
+}
+
+class CreditCardAccount {
+    +CreditCardAccount(customerNumber: int, amount: BigDecimal, createdOn: LocalDateTime)
+    +CreditCardAccount(accountNumber: int, customerNumber: int, amount: BigDecimal, createdOn: LocalDateTime)
+}
+
+class Customer {
+    ~{static}nextCustomerNumber: int = 1;
+    -customerNumber: int
+    ~primaryChequingAccount: ChequingAccount
+    -accounts: ArrayList<Account>
+    -jointAccounts: ArrayList<Account>
+
+    +Customer(username: String, password: String, sinNumber: int)
+    +Customer(customerNumber: int, username: String, password: String, sinNumber: int)
+    -readAccounts(): void
+    -makeAccount(accountNumber: int, customerNumber: int, balance: BigDecimal, createdOn: LocalDateTime,
+        accountType: String,  isPrimary: boolean, recentTrxID: int, joint: boolean): Account
+    -updateNextAccountNumber(): void
+    +getCustomerNumber(): int
+    +match(aNumber: int): boolean
+    +match(username: String, password: String): boolean
+    +findAccount(accountNumber: int): Account
+    +requestNewAccount(accountType: String): String
+    +toString(): String
+    +getTotalBalance(): BigDecimal
+    -getMyAccountsBalance(myAccounts: ArrayList<Account>): BigDecimal
+    ~getAccounts(): ArrayList<Account>
+    +getAccountsFX(): ObservableList<AccountForFX>
+    +getAccountsFX(includeJointAccounts: boolean): ObservableList<AccountForFX>
+}
+
+class Deposit {
+    +Deposit(a: Account, amount: BigDecimal, trxDateTime: LocalDateTime)
+    +Deposit(trxID: int, c: Customer, a: Account, amount: BigDecimal, trxDateTime: LocalDateTime)
+    +doTransaction(): boolean
+}
+
+class IdentifiablePerson {
+    #username: String
+    #password: String
+    #sinNumber: int
+
+    +IdentifiablePerson(username: String, password: String, sinNumber: int)
+    +getSinNumber(): int
+    +setSinNumber(value: int): void
+}
+
+class LineOfCreditAccount {
+    +LineOfCreditAccount(customerNumber: int, amount: BigDecimal, createdOn: LocalDateTime)
+    +LineOfCreditAccount(accountNumber: int, customerNumber: int, amount: BigDecimal, createdOn: LocalDateTime)
+}
+
+class NewAccountRequestForFX {
+    -{final}customerNumber: IntegerProperty
+    -{final}accountType: StringProperty
+    -{final}requestDateTime: ObjectProperty<LocalDateTime>
+
+    +NewAccountRequestForFX(customerNumber: int, accountType: String, requestDateTime: LocalDateTime)
+    +getCustomerNumber(): int
+    +accountTypeProperty(): StringProperty
+    +getRequestDateTime(): LocalDateTime
+}
+
+class PayBill {
+    ~payee: int
+    +PayBill(a: Account, amount: BigDecimal, trxDateTime: LocalDateTime, payee: int)
+    +PayBill(trxID: int, c: Customer, a: Account, amount: BigDecimal, trxDateTime: LocalDateTime, payee: int)
+    +doTransaction(): boolean
+    +writeToBillPaymentFile(): void
+}
+
+class PowerSavingAccount {
+    -monthlyInterestRate: double
+
+    +PowerSavingAccount(customerNumber: int, amount: BigDecimal, createdOn: LocalDateTime)
+    +PowerSavingAccount(accountNumber: int, customerNumber: int, amount: BigDecimal, createdOn: LocalDateTime)
+    -getMonthlyInterestRate(): double
+    #addInterest(): void
+}
+
+class SavingAccount {
+    ~{static} monthlyInterestRate: double = 0.001
+    +SavingAccount(customerNumber: int, amount: BigDecimal, createdOn: LocalDateTime)
+    +SavingAccount(accountNumber: int, customerNumber: int, amount: BigDecimal, createdOn: LocalDateTime)
+    +isAbleToTakeOutMoney(amount: BigDecimal): boolean
+    #addInterest(): void
+}
+
+class TransactionForFX {
+    -{final}trxID: IntegerProperty
+    -{final}customerNumber: IntegerProperty
+    -{final}accountNumber: IntegerProperty
+    -{final}trxAmount: ObjectProperty<BigDecimal>
+    -{final}trxType: StringProperty
+    -{final}trxDateTime: ObjectProperty<LocalDateTime>
+    -{final}secondNumber: IntegerProperty
+    -{final}undoable: BooleanProperty
+    -{final}isReversingEntry: BooleanProperty
+
+    +TransactionForFX(trxID: int, customerNumber: int, accountNumber: int, trxAmount: BigDecimal, trxType: String,
+        trxDateTime: LocalDateTime, secondNumber: int, undoable: boolean, isReversingEntry: boolean)
+    +getTrxID(): int
+    +getCustomerNumber(): int
+    +getAccountNumber(): int
+    +getTrxAmount(): BigDecimal
+    +getTrxDateTime(): LocalDateTime
+    +trxTypeProperty(): StringProperty
+    +getSecondNumber(): int
+    +undoableProperty(): BooleanProperty
+    +isReversingEntryProperty(): BooleanProperty
+}
+
+class TransferIn {
+    ~account2: Account
+
+    +TransferIn(a: Account, amount: BigDecimal, trxDateTime: LocalDateTime, fromAccount: Account)
+    +TransferIn(trxID: int, c: Customer, a: Account, amount: BigDecimal, trxDateTime: LocalDateTime, fromAccount: Account)
+    +doTransaction(): boolean
+}
+
+class TransferOut {
+    ~account2: Account
+
+    +TransferOut(a: Account, amount: BigDecimal, trxDateTime: LocalDateTime, fromAccount: Account)
+    +TransferOut(trxID: int, c: Customer, a: Account, amount: BigDecimal, trxDateTime: LocalDateTime, fromAccount: Account)
+    +doTransaction(): boolean
+}
+
+class TransferToOther {
+    ~customer2: Customer
+
+    +TransferToOther(a: Account, amount: BigDecimal, trxDateTime: LocalDateTime, toCustomer: Customer)
+    +TransferToOther(trxID: int, c: Customer, a: Account, amount: BigDecimal, trxDateTime: LocalDateTime, toCustomer: Customer)
+    +doTransaction(): boolean
+    -otherCustomerHasPrimaryAccount(customer: Customer): boolean
+}
+
+class Withdrawal {
+    +Withdrawal(a: Account, amount: BigDecimal, trxDateTime: LocalDateTime)
+    +Withdrawal(trxID: int, c: Customer, a: Account, amount: BigDecimal, trxDateTime: LocalDateTime)
+    +doTransaction(): boolean
+    +ismultipleOf5(money: BigDecimal): boolean
+    +atmHasEnoughMoney(money: BigDecimal): boolean
+    -updateATMMoney(): void
+    -sendAlertToManager(): void
+}
+
+
+@enduml

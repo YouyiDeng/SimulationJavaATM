@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="atmMVC.controller.NewCustomerController">
+    <children>
+        <GridPane layoutY="12.0" prefHeight="90.0" prefWidth="363.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="15.0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="158.0" minWidth="100.0" prefWidth="153.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="154.0" minWidth="10.0" prefWidth="150.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints maxHeight="26.0" minHeight="10.0" prefHeight="24.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="24.0" minHeight="10.0" prefHeight="24.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="24.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+            <children>
+                <Label text="Username:  " GridPane.halignment="RIGHT" />
+                <Label text="Password:  " GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
+                <TextField fx:id="userNameField" prefHeight="39.0" prefWidth="244.0" GridPane.columnIndex="1" />
+                <TextField fx:id="passwordField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Label text="SIN Number:  " GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
+            <TextField fx:id="sinNumberdField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            </children>
+        </GridPane>
+        <ButtonBar layoutX="14.0" layoutY="93.0" prefHeight="40.0" prefWidth="316.0" AnchorPane.topAnchor="100.0">
+            <buttons>
+                <Button mnemonicParsing="false" onAction="#handleCreate" prefHeight="25.0" prefWidth="100.0" text="Create" />
+                <Button mnemonicParsing="false" onAction="#handleCancel" prefHeight="25.0" prefWidth="100.0" text="Cancel" />
+            </buttons>
+        </ButtonBar>
+    </children>
+</AnchorPane>

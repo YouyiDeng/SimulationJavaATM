@@ -1,0 +1,5 @@
+Please add money to ATM.  Today is 2019-03-10T01:46:23.199
+ATM has 0 $50 bills.
+ATM has 100 $20 bills.
+ATM has 100 $10 bills.
+ATM has 100 $5 bills.

@@ -1,0 +1,457 @@
+@startuml
+
+class AddInterestController
+class AtmMoneyController
+class BankAdvisorController
+class BankCommonComponents
+class BankManagerController
+class CommonComponents
+class CustomerAccountsOverviewController
+class CustomerCommonComponents
+class CustomerController
+class DepositWithdrawalController
+class ExchangeConverter
+class JoinAccountController
+class LoginController
+class LookupCustomersController
+class MyAppointmentsController
+class NewAccountRequestController
+class NewBankPersonController
+class NewCustomerController
+class ProcessNewAccountRequestController
+class RootLayoutController
+class TransferController
+class TransferToOtherPayBillController
+class UndoTransactionController
+class MainApp
+
+CommonComponents <|-up- CustomerCommonComponents
+CommonComponents <|-down- BankCommonComponents
+CommonComponents <|-left- LoginController
+CommonComponents <|-right- NewCustomerController
+CommonComponents <|-right- RootLayoutController
+
+BankCommonComponents <|-left- BankAdvisorController
+BankCommonComponents <|-left- AddInterestController
+BankCommonComponents <|-left- AtmMoneyController
+BankCommonComponents <|-right- JoinAccountController
+BankCommonComponents <|-right- NewBankPersonController
+BankCommonComponents <|-right- BankManagerController
+BankCommonComponents <|-- LookupCustomersController
+BankCommonComponents <|-- MyAppointmentsController
+BankCommonComponents <|-- ProcessNewAccountRequestController
+BankCommonComponents <|-- UndoTransactionController
+
+CustomerAccountsOverviewController --|> CustomerCommonComponents
+CustomerController -right-|> CustomerCommonComponents
+DepositWithdrawalController --|> CustomerCommonComponents
+TransferToOtherPayBillController -left-|> CustomerCommonComponents
+NewAccountRequestController -left-|> CustomerCommonComponents
+TransferController --|> CustomerCommonComponents
+
+DepositWithdrawalController -- ExchangeConverter
+
+
+class AddInterestController {
+    -messageLabel: Label
+
+    +AddInterestController()
+    -handleAddInterest(): void
+    -handleClose(): void
+    +setInitialMessageLabel(): void
+    -savingAccountTotal(): BigDecimal
+}
+
+class AtmMoneyController {
+    -billOf5Field: TextField
+    -billOf10Field: TextField
+    -billOf20Field: TextField
+    -billOf50Field: TextField
+    -billOf5USDField: TextField
+    -billOf10USDField: TextField
+    -billOf20USDField: TextField
+    -billOf50USDField: TextField
+
+    -initialize(): void
+    -handleAddMoney(): void
+    -handleCancel(): void
+    -isInputValid(): boolean
+}
+
+class BankAdvisorController {
+    -handleViewMyAppointment(): void
+    -handleExit(): void
+    -showAppointmentDialog(): void
+}
+
+class BankCommonComponents {
+    #bankPerson: BankPerson
+    #setBankPerson(BankPerson bankPerson): void
+    -atmMoney(): String
+    #showAddMoneyDialog(): void
+    #showMakeJointAccountDialog(): void
+    #handleViewATMBalance(): void
+    #handleAddMoneyToATM(): void
+    #handleProcessDepositFile(): void
+    #handleMakeJointAccount(): void
+    #handleMyAccountsOverview(): void
+    #handleLookupCustomers(): void
+}
+
+class BankManagerController {
+    -handleCreateNewCustomer(): void
+    -handleCreateNewBankPerson(): void
+    -handleProcessNewAccountRequest(): void
+    -handleAddInterestToSavings(): void
+    -handleUndoMostRecentTransaction(): void
+    -handleUndoParticularTransaction(): void
+    -handleExit(): void
+    -showProcessNewAccountRequestDialog(): void
+    -showUndoTransactionDialog(): void
+    -showAddInterestDialog(): void
+}
+
+class CommonComponents {
+    #mainApp: MainApp
+    #dialogStage: Stage
+    +setMainApp(MainApp mainApp): void
+    +setDialogStage(dialogStage: Stage): void
+    #showAlert(title: String, headerText: String, message: String, alertType: Alert.AlertType): void
+    +{static}isNumeric(str: String): boolean
+    +{static}isDouble(str: String): boolean
+}
+
+class CustomerAccountsOverviewController {
+    -accountTable: TableView<AccountForFX>
+    -accountNumberColumn: TableColumn<AccountForFX, Integer>
+    -accountTypeColumn: TableColumn<AccountForFX, String>
+    -balanceColumn: TableColumn<AccountForFX, BigDecimal>
+    -accountOpenDateColumn: TableColumn<AccountForFX, LocalDateTime>
+    -primaryColumn: TableColumn<AccountForFX, Boolean>
+    -jointColumn: TableColumn<AccountForFX, Boolean>
+    -netTotalLabel: Label
+    -mostRecentPromptLabel: Label
+    -secondNumberPromptLabel: Label-
+    -trxIdLabel: Label
+    -trxTypeLabel: Label
+    -trxAmountLabel: Label
+    -trxDateTimeLabel: Label
+    -secondNumberLabel: Label
+    -undoableLabel: Label
+    -isReversingEntryLabel: Label
+    -accounts: ObservableList<AccountForFX>;
+
+    +CustomerAccountsOverviewController()
+    -initialize(): void
+    +setAccountTable(): void
+    -showMostRecentTrxDetails(accountForFX: AccountForFX): void
+    -setSecondNumberPrompt(trx: Transaction): void
+    -resetMostRecentTrxDetails(): void
+    +setFirstEntry(): void
+    -handleClose(): void
+}
+
+class CustomerCommonComponents {
+    -customer: Customer
+    +setCustomer(customer: Customer): void
+    #canTransferOutMoney(account: Account, amountField: TextField): boolean
+}
+
+class CustomerController {
+    -handleRequestNewAccount(): void
+    -handleDeposit(): void
+    -handleWithdraw(): void
+    -handleTransferIn(): void
+    -handleTransferOut(): void
+    -handleTransferToOther(): void
+    -handlePayBill(): void
+    -handleAccountsOverview(): void
+    -handleExit(); void
+    -showNewAccountRequestDialog(): void
+    -showDepositWithdrawalDialog(isDeposit: boolean): void
+    -showTransferDialog(isTransferIn: boolean): void
+    -showTransferToOtherPayBillDialog(isTransferToOther: boolean): void
+}
+
+class DepositWithdrawalController {
+    -amountField: TextField
+    -currencyField: TextField
+    -accountTable: TableView<AccountForFX>
+    -accountNumberColumn: TableColumn<AccountForFX, Integer>
+    -accountTypeColumn: TableColumn<AccountForFX, String>
+    -balanceColumn: TableColumn<AccountForFX, BigDecimal>
+    -accountOpenDateColumn: TableColumn<AccountForFX, LocalDateTime>
+    -primaryColumn: TableColumn<AccountForFX, Boolean>
+    -jointColumn: TableColumn<AccountForFX, Boolean>
+    -amountPromptLabel: Label
+    -accountPromptLabel: Label
+    -currencyPromptLabel: Label
+    -doButton: Button
+    -accounts: ObservableList<AccountForFX>
+    -selectedAccount: AccountForFX
+    -isDeposit: boolean
+
+    +DepositWithdrawalController()
+    -initialize(): void
+    +setAccountTable(): void
+    +setControlNames(isDeposit: boolean): void
+    -handleDepositWithdraw(): void
+    -handleCancel(): void
+    -isInputValid(): boolean
+    -doDepositWithdrawal(isDeposit: boolean): void
+    -showResult(successful: boolean, account: Account, currency: String): void
+    -isWithdrawable(withdraw: Withdrawal): boolean
+}
+
+class ExchangeConverter {
+    -{static}CADtoUSD: int
+    -{static}USDtoCAD: int
+    +{static}ExchangeRate(convertFrom: String, convertTo: String): double
+    -{static}randomNumberGenerator(): double
+}
+
+class JoinAccountController {
+    -accountTable: TableView<AccountForFX>
+    -accountNumberColumn: TableColumn<AccountForFX, Integer>
+    -accountTypeColumn: TableColumn<AccountForFX, String>
+    -balanceColumn: TableColumn<AccountForFX, BigDecimal>
+    -accountOpenDateColumn: TableColumn<AccountForFX, LocalDateTime>
+    -primaryColumn: TableColumn<AccountForFX, Boolean>
+    -jointColumn: TableColumn<AccountForFX, Boolean>
+    -secondNumberField: TextField
+    -accounts: ObservableList<AccountForFX>
+    -selectedAccount: AccountForFX
+
+    +JoinAccountController()
+    -initialize(): void
+    +setAccountTable(): void
+    -handleMakJoint(): void
+    -handleCancel(): void
+    -isInputValid(): boolean
+    -makeJoin(): void
+    -showResult(successful: boolean, accountForFX: AccountForFX): void
+}
+
+class LoginController {
+    -userNameField: TextField
+    -passwordField: TextField
+    -handleCustomerLogin(): void
+    -handleBankLogin(): void
+    -handleCancel(): void
+    -isInputValid(); boolean
+    -showBankManagerView(bankManager: BankManager): void
+    -showBankAdvisorView(bankAdvisor: BankAdvisor): void
+    -showCustomerView(customer: Customer): void
+}
+
+class LookupCustomersController {
+    -accountTable: TableView<AccountForFX>
+    -accountNumberColumn: TableColumn<AccountForFX, Integer>
+    -accountTypeColumn: TableColumn<AccountForFX, String>
+    -balanceColumn: TableColumn<AccountForFX, BigDecimal>
+    -accountOpenDateColumn: TableColumn<AccountForFX, LocalDateTime>
+    -primaryColumn: TableColumn<AccountForFX, Boolean>
+    -jointColumn: TableColumn<AccountForFX, Boolean>
+    -netTotalLabel: Label
+    -mostRecentPromptLabel: Label
+    -secondNumberPromptLabel: Label
+    -trxIdLabel: Label
+    -trxTypeLabel: Label
+    -trxAmountLabel: Label
+    -trxDateTimeLabel: Label
+    -secondNumberLabel: Label
+    -undoableLabel: Label
+    -isReversingEntryLabel: Label
+    -customerComboBox: ComboBox<Integer>
+    -accounts: ObservableList<AccountForFX>
+
+    +LookupCustomersController()
+    -initialize(): void
+    +setComboBox(): void
+    +setAccountTable(customerNumber: int): void
+    -showMostRecentTrxDetails(accountForFX: AccountForFX): void
+    -setSecondNumberPrompt(trx: Transaction): void
+    -resetMostRecentTrxDetails(): void
+    +setFirstEntry(): void
+    -handleClose(): void
+}
+
+class MyAppointmentsController {
+    -appointmentTable: TableView<Appointment>
+    -customerNumberColumn: TableColumn<Appointment, Integer>
+    -requestedOnColumn: TableColumn<Appointment, LocalDateTime>
+    -subjectColumn: TableColumn<Appointment, String>
+    -customerNumberField: TextField
+    -subjectField: TextField
+    -appointments: ObservableList<Appointment>
+
+    +MyAppointmentsController()
+    -initialize(): void
+    +setAppointmentTable(): void
+    -handleMakeAppointment(): void
+    -handleCancel(): void
+    -isInputValid(): boolean
+    -makeNewAppointment(): void
+}
+
+class NewAccountRequestController {
+    -chequingBox: CheckBox
+    -savingBox: CheckBox
+    -powerSavingBox: CheckBox
+    -creditCardBox: CheckBox
+    -lineOfCreditBox: CheckBox
+
+    -handleSendRequest(): void
+    -handleCancel(): void
+    -isInputValid(): boolean
+}
+
+class NewBankPersonController {
+    -userNameField: TextField
+    -passwordField: TextField
+    -sinNumberdField: TextField
+    -roleField: ChoiceBox<String>
+
+    -handleCreate(): void
+    -handleCancel(): void
+    -isInputValid(): boolean
+}
+
+class NewCustomerController {
+    -userNameField: TextField
+    -passwordField: TextField
+    -sinNumberdField: TextField
+
+    -handleCreate(): void
+    -handleCancel(): void
+    -isInputValid(): boolean
+}
+
+class ProcessNewAccountRequestController {
+    -accountRequestTable: TableView<NewAccountRequestForFX>
+    -customerNumberColumn: TableColumn<NewAccountRequestForFX, Integer>
+    -accountTypeColumn: TableColumn<NewAccountRequestForFX, String>
+    -requestDateTimeColumn: TableColumn<NewAccountRequestForFX, LocalDateTime>
+    -accountRequests: ObservableList<NewAccountRequestForFX>
+
+    +ProcessNewAccountRequestController()
+    -initialize(): void
+    +setAccountRequestsTable(): void
+    -handleApprove(): void
+    -handleDecline(): void
+    -handleClose(): void
+    -isInputValid(): boolean
+}
+
+class RootLayoutController {
+    -handleHelpContactUs(): void
+}
+
+class TransferController {
+    -amountField: TextField
+    -fromAccountTable: TableView<AccountForFX>
+    -fromAccountNumberColumn: TableColumn<AccountForFX, Integer>
+    -fromAccountTypeColumn: TableColumn<AccountForFX, String>
+    -fromBalanceColumn: TableColumn<AccountForFX, BigDecimal>
+    -fromAccountOpenDateColumn: TableColumn<AccountForFX, LocalDateTime>
+    -fromPrimaryColumn: TableColumn<AccountForFX, Boolean>
+    -fromJointColumn: TableColumn<AccountForFX, Boolean>
+    -toAccountTable: TableView<AccountForFX>
+    -toAccountNumberColumn: TableColumn<AccountForFX, Integer>
+    -toAccountTypeColumn: TableColumn<AccountForFX, String>
+    -toBalanceColumn: TableColumn<AccountForFX, BigDecimal>
+    -toAccountOpenDateColumn: TableColumn<AccountForFX, LocalDateTime>
+    -toPrimaryColumn: TableColumn<AccountForFX, Boolean>
+    -toJointColumn: TableColumn<AccountForFX, Boolean>
+    -doTransfer: Button
+    -fromAccounts: ObservableList<AccountForFX>
+    -toAccounts: ObservableList<AccountForFX>
+    -selectedFromAccount: AccountForFX
+    -selectedToAccount: AccountForFX
+    -isTransferIn: boolean
+
+    +TransferController()
+    -initialize(): void
+    -initializeFromTable(): void
+    -initializeToTable(): void
+    +setAccountTables(): void
+    +setControlNames(isTransferIn: boolean): void
+    -handleTransfer(): void
+    -handleCancel(): void
+    -isInputValid(): boolean
+    -notSameAccount(): boolean
+    -doTransfer(isTransferIn: boolean): void
+    -showResult(successful: boolean, fromAccount: Account, toAccount: Account): void
+}
+
+class TransferToOtherPayBillController {
+    -amountField: TextField
+    -fromAccountTable: TableView<AccountForFX>
+    -fromAccountNumberColumn: TableColumn<AccountForFX, Integer>
+    -fromAccountTypeColumn: TableColumn<AccountForFX, String>
+    -fromBalanceColumn: TableColumn<AccountForFX, BigDecimal>
+    -fromAccountOpenDateColumn: TableColumn<AccountForFX, LocalDateTime>
+    -fromPrimaryColumn: TableColumn<AccountForFX, Boolean>
+    -fromJointColumn: TableColumn<AccountForFX, Boolean>
+    -fromAccountPromptLabel: Label
+    -toPromptLabel: Label
+    -secondNumberField: TextField
+    -doButton: Button
+    -fromAccounts: ObservableList<AccountForFX>
+    -selectedFromAccount: AccountForFX
+    -isTransferToOther: boolean
+
+    +TransferToOtherPayBillController()
+    -initialize(): void
+    +setAccountTable(): void
+    +setControlNames(isTransferToOther: boolean): void
+    -handleTransferOutOtherPayBill(): void
+    -handleCancel(): void
+    -isInputValid(): boolean
+    -doTransferOutOtherPayBill(isTransferToOther: boolean): void
+    -showResult(successful: boolean, fromAccount: Account)
+}
+
+class UndoTransactionController {
+    -trxTable: TableView<TransactionForFX>
+    -trxIDColumn: TableColumn<TransactionForFX, Integer>
+    -customerNumberColumn: TableColumn<TransactionForFX, Integer>
+    -accountNumberColumn: TableColumn<TransactionForFX, Integer>
+    -trxAmountColumn: TableColumn<TransactionForFX, BigDecimal>
+    -trxTypeColumn: TableColumn<TransactionForFX, String>
+    -trxDateTimeColumn: TableColumn<TransactionForFX, LocalDateTime>
+    -secondNumberColumn: TableColumn<TransactionForFX, Integer>
+    -undoableColumn: TableColumn<TransactionForFX, Boolean>
+    -isReversingEntryColumn: TableColumn<TransactionForFX, Boolean>
+    -transactions: ObservableList<TransactionForFX>
+
+    +UndoTransactionController()
+    -initialize(): void
+    +setTrxTable(): void
+    -handleUndoTransaction(): void
+    -transactionForFXFromTrx(trx: Transaction): TransactionForFX
+    -handleCancel(): void
+    -isInputValid(): boolean
+}
+
+class MainApp {
+    -{static}theATM: ATM
+    -{static}theBank: Bank
+    -primaryStage: Stage
+    -rootLayout: BorderPane
+
+    +MainApp()
+    +start(primaryStage: Stage): void
+    -initRootLayout(): void
+    +showLoginView(): void
+    +showNewCustomerDialog(): void
+    +getPrimaryStage(): Stage
+    +getBank(): Bank
+    +setBank(bank: Bank): void
+    +getRootLayout(): BorderPane
+    +{static}main(args: String[]): void
+    +showAccountsOverviewDialog(customer: Customer): void
+    +showNewBankPersonDialog(): void
+}
+
+@enduml

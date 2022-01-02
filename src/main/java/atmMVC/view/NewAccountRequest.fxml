@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="atmMVC.controller.NewAccountRequestController">
+    <children>
+        <GridPane layoutY="12.0" prefHeight="150.0" prefWidth="363.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="15.0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="90.0" minWidth="90.0" prefWidth="90.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="154.0" minWidth="10.0" prefWidth="150.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints maxHeight="26.0" minHeight="10.0" prefHeight="24.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="24.0" minHeight="10.0" prefHeight="24.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="24.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="24.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="24.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+         <children>
+            <CheckBox fx:id="chequingBox" contentDisplay="RIGHT" mnemonicParsing="false" text="Chequing Account" GridPane.columnIndex="1" GridPane.halignment="LEFT" />
+            <CheckBox fx:id="savingBox" mnemonicParsing="false" text="Saving Account" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <CheckBox fx:id="creditCardBox" mnemonicParsing="false" text="Credit Card Account" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <CheckBox fx:id="lineOfCreditBox" mnemonicParsing="false" text="Line Of Credit Account" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <CheckBox fx:id="powerSavingBox" mnemonicParsing="false" text="Power Saving Account" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+         </children>
+        </GridPane>
+        <ButtonBar layoutX="14.0" layoutY="150.0" prefHeight="40.0" prefWidth="316.0">
+            <buttons>
+                <Button mnemonicParsing="false" onAction="#handleSendRequest" prefHeight="25.0" prefWidth="157.0" text="Send Request" />
+                <Button mnemonicParsing="false" onAction="#handleCancel" prefHeight="25.0" prefWidth="100.0" text="Cancel" />
+            </buttons>
+        </ButtonBar>
+    </children>
+</AnchorPane>
